@@ -1,6 +1,6 @@
 ###############################################################################
 #                       CADENCE COPYRIGHT NOTICE
-#         © 2008-2013 Cadence Design Systems, Inc. All rights reserved.
+#         ï¿½ 2008-2013 Cadence Design Systems, Inc. All rights reserved.
 #------------------------------------------------------------------------------
 #
 # This Foundation Flow is provided as an example of how to perform specialized
@@ -56,8 +56,8 @@ set vars(script_root)  [pwd]/SCRIPTS
 # vars(fp_file)      <floorplan TCL file>
 # vars(def_files)     <floorplan DEF file>
 # --------------------------------------------------------------------
-set vars(design)           "mult_seq"
-set vars(netlist)          "$vars(data_root)/mult_seq.vh"
+set vars(design)           "processing_unit"
+set vars(netlist)          "$vars(data_root)/hdl/processing_unit.vhd"
 #set vars(fp_file)    $vars(data_root)/dtmf_recvr_core.fp
 #set vars(cts_spec)  "$vars(data_root)/dtmf_recvr_core.ctstch"
 #set vars(def_files) "$vars(data_root)/dtmf_recvr_core.scan.def.gz"
