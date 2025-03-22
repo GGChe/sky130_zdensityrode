@@ -16,7 +16,7 @@ if {[llength $my_hdl_files] == 0} {
 
 set my_toplevel "processing_unit"
 
-read_hdl -language verilog $my_hdl_files
+read_hdl -language v2001 $my_hdl_files
 # Alternatively:
 # analyze -format verilog $my_hdl_files
 # elaborate $my_toplevel
