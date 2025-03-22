@@ -51,7 +51,7 @@ help:
 
 
 simple: setup
-	FF_STOP=$(FF_STOP); VPATH=$(VPATH); export VPATH; $(TOOL) -init $(SCRIPTS)/INNOVUS/run_simple.tcl -log $(LOG)/simple.log $(ARGS)
+	FF_STOP=$(FF_STOP); VPATH=$(VPATH); export VPATH; $(TOOL) -init $(SCRIPTS)/INNOVUS/run_simple.all ..tcl -log $(LOG)/simple.all ..log $(ARGS)
 
 
 single: setup

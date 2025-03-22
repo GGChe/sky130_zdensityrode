@@ -4,7 +4,7 @@ Info: Selecting library 'sky130_osu_sc_18T_ms_TT_1P8_25C.ccs' in domain '-1'
 Info    : Joules engine is used. [RPT-16]
         : Joules engine is being used for the command report_power.
 Info   : ACTP-0001 [ACTPInfo] Activity propagation started for stim#0 netlist
-       : mult_seq
+       : processing_unit
 Info   : ACTP-0009 [ACTPInfo] Activity Propagation Progress Report :   0%   1%   2%   3%   4%   5%   6%   7%   8%   9%  10%  11%  12%  13%  14%  15%  16%  17%  18%  19%  20%  21%  22%  23%  24%  25%  26%  27%  28%  29%  30%  31%  32%  33%  34%  35%  36%  37%  38%  39%  40%  41%  42%  43%  44%  45%  46%  47%  48%  49%  50%  51%  52%  53%  54%  55%  56%  57%  58%  59%  60%  61%  62%  63%  64%  65%  66%  67%  68%  69%  70%  71%  72%  73%  74%  75%  76%  77%  78%  79%  80%  81%  82%  83%  84%  85%  86%  87%  88%  89%  90%  91%  92%  93%  94%  95%  96%  97%  98%  99% 100%
 Info   : ACTP-0001 Activity propagation ended for stim#0
 Info   : PWRA-0001 [PwrInfo] compute_power effective options 
@@ -27,21 +27,21 @@ Info   : PWRA-0009 [PwrInfo] Power Computation Progress Report :   0%   1%   2% 
 Info   : PWRA-0002 Finished power computation.
 Info   : PWRA-0007 [PwrInfo] Completed successfully.
        : Info=6, Warn=2, Error=0, Fatal=0
-Instance: /mult_seq
+Instance: /processing_unit
 Power Unit: W
 PDB Frames: /stim#0/frame#0
   -------------------------------------------------------------------------
     Category         Leakage     Internal    Switching        Total    Row%
   -------------------------------------------------------------------------
       memory     0.00000e+00  0.00000e+00  0.00000e+00  0.00000e+00   0.00%
-    register     2.89221e-08  1.15347e-04  2.39520e-05  1.39328e-04   3.34%
+    register     2.43750e-07  6.87455e-04  1.83722e-03  2.52492e-03  36.63%
        latch     0.00000e+00  0.00000e+00  0.00000e+00  0.00000e+00   0.00%
-       logic     2.91330e-07  6.44614e-04  3.22337e-03  3.86827e-03  92.80%
+       logic     2.12368e-07  2.60388e-04  2.73091e-03  2.99151e-03  43.40%
         bbox     0.00000e+00  0.00000e+00  0.00000e+00  0.00000e+00   0.00%
-       clock     0.00000e+00  0.00000e+00  1.60704e-04  1.60704e-04   3.86%
+       clock     0.00000e+00  0.00000e+00  1.37609e-03  1.37609e-03  19.97%
          pad     0.00000e+00  0.00000e+00  0.00000e+00  0.00000e+00   0.00%
           pm     0.00000e+00  0.00000e+00  0.00000e+00  0.00000e+00   0.00%
   -------------------------------------------------------------------------
-    Subtotal     3.20253e-07  7.59961e-04  3.40802e-03  4.16831e-03 100.00%
-  Percentage           0.01%       18.23%       81.76%      100.00% 100.00%
+    Subtotal     4.56118e-07  9.47843e-04  5.94422e-03  6.89252e-03 100.00%
+  Percentage           0.01%       13.75%       86.24%      100.00% 100.00%
   -------------------------------------------------------------------------

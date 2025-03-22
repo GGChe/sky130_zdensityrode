@@ -1,9 +1,7 @@
-# Cadence Genus(TM) Synthesis Solution, Version 20.11-s111_1, built Apr 26 2021 14:57:38
+# Cadence Genus(TM) Synthesis Solution, Version 21.15-s080_1, built Sep 23 2022 12:57:55
 
-# Date: Sat Aug 06 12:29:30 2022
-# Host: sakuya.ecen.okstate.edu (x86_64 w/Linux 3.10.0-1160.71.1.el7.x86_64) (16cores*32cpus*1physical cpu*AMD Ryzen 9 3950X 16-Core Processor 512KB)
-# OS:   Red Hat Enterprise Linux Server release 7.9 (Maipo)
+# Date: Sat Mar 22 17:15:57 2025
+# Host: mcad1.imse-cnm.csic.es (x86_64 w/Linux 4.18.0-477.13.1.el8_8.x86_64) (12cores*24cpus*2physical cpus*Intel(R) Xeon(R) Silver 4310 CPU @ 2.10GHz 18432KB)
+# OS:   Red Hat Enterprise Linux release 8.8 (Ootpa)
 
 source genus_script.tcl
-rxit
-exit
