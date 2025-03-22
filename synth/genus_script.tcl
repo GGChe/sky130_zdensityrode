@@ -8,11 +8,10 @@ lappend search_path "./hdl"
 set_db init_hdl_search_path $search_path
 read_libs sky130_osu_sc_18T_ms_TT_1P8_25C.ccs.lib 
 
-set my_verilog_files [list adder.sv flopenr.sv flop.sv mult_seq.sv]
+set my_hdl_files [glob ./hdl/*.vhd]
+set my_toplevel "processing_unit"
 
-set my_toplevel "mult_seq"
-
-read_hdl -language sv $my_verilog_files
+read_hdl -language vhdl $my_hdl_files
 elaborate $my_toplevel
 
 # Set Frequency in [MHz] or [ps]

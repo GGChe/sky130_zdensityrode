@@ -1,6 +1,6 @@
-create_clock -name clk -period $my_period [get_ports $my_clk]
-set_clock_uncertainty $my_uncertainty [get_clocks $my_clk]
-set_input_delay -max 0.0 [get_ports $all_in_ex_clk] -clock [get_clocks $my_clk]
-set_output_delay -max 0.0 [get_ports $all_out] -clock [get_clocks $my_clk]
-set_load [expr [load_of sky130_osu_sc_18T_ms_TT_1P8_25C.ccs/sky130_osu_sc_18T_ms__dff_1/D] * 1] [all_outputs]
-set_driving_cell  -lib_cell sky130_osu_sc_18T_ms__dff_1 -pin Q $all_in_ex_clk
+create_clock -name clk -period 10.0 [get_ports clk]
+set_clock_uncertainty 1.0 [get_clocks clk]
+set_input_delay -max 0.0 -clock clk [get_ports {rst data_in threshold_in class_a_thresh_in class_b_thresh_in timeout_period_in}]
+set_output_delay -max 0.0 -clock clk [get_ports {spike_detection event_out}]
+set_load 0.01 [get_ports {spike_detection event_out}]
+set_driving_cell -lib_cell sky130_osu_sc_18T_ms__dff_1 -pin Q [get_ports {rst data_in threshold_in class_a_thresh_in class_b_thresh_in timeout_period_in}]
