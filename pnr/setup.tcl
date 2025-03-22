@@ -57,7 +57,8 @@ set vars(script_root)  [pwd]/SCRIPTS
 # vars(def_files)     <floorplan DEF file>
 # --------------------------------------------------------------------
 set vars(design)           "processing_unit"
-set vars(netlist)          "$vars(data_root)/hdl/processing_unit.vhd"
+set vars(netlist) 		   "$vars(data_root)/hdl/processing_unit.vhd"
+
 #set vars(fp_file)    $vars(data_root)/dtmf_recvr_core.fp
 #set vars(cts_spec)  "$vars(data_root)/dtmf_recvr_core.ctstch"
 #set vars(def_files) "$vars(data_root)/dtmf_recvr_core.scan.def.gz"
@@ -188,7 +189,7 @@ set vars(corner_tt,rc_corner) rc_typ
 ###############################################################################
 
 set vars(constraint_modes) "setup_func_mode"
-set vars(setup_func_mode,pre_cts_sdc) "$vars(data_root)/mult_seq.sdc"
+set vars(setup_func_mode,pre_cts_sdc) "$vars(data_root)/processing_unit.sdc"
 
 #set vars(constraint_modes)             "setup_func_mode hold_func_mode"
 #set vars(setup_func_mode,pre_cts_sdc)  "$vars(data_root)/dtmf_recvr_core.sdc $vars(data_root)/prects.sdc"
