@@ -23,43 +23,43 @@ module classifier (
     localparam COUNTER_CONFIRMATION_B_THRESH = 1;
 
     // Registers
-    reg  [1:0] event          = EVENT_C;
-    reg  [1:0] previous_event = EVENT_C;
+    reg  [1:0] current_event;
+    reg  [1:0] previous_event;
 
     reg  [31:0] class_a_threshold;
     reg  [31:0] class_b_threshold;
     reg  [31:0] timeout_period;
 
-    reg  [31:0] excitability             = 0;
-    reg  [31:0] sample_count             = 0;
-    reg  [31:0] last_peak_sample_count   = 0;
-    reg  [31:0] last_event_sample_count  = 0;
-    reg  [31:0] counter_confirmation_a   = 0;
-    reg  [31:0] counter_confirmation_b   = 0;
-    reg  [31:0] last_a_section_end       = 0;
-    reg  [31:0] last_b_section_end       = 0;
-    reg  [31:0] event_start              = 0;
-    reg  [31:0] k                        = 0;
+    reg  [31:0] excitability;
+    reg  [31:0] sample_count;
+    reg  [31:0] last_peak_sample_count;
+    reg  [31:0] last_event_sample_count;
+    reg  [31:0] counter_confirmation_a;
+    reg  [31:0] counter_confirmation_b;
+    reg  [31:0] last_a_section_end;
+    reg  [31:0] last_b_section_end;
+    reg  [31:0] event_start;
+    reg  [31:0] k;
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            excitability            <= 0;
-            sample_count            <= 0;
-            last_peak_sample_count  <= 0;
+            current_event          <= EVENT_C;
+            previous_event         <= EVENT_C;
+            class_a_threshold      <= 5;
+            class_b_threshold      <= 1;
+            timeout_period         <= 5 * SAMPLE_RATE;
+            excitability           <= 0;
+            sample_count           <= 0;
+            last_peak_sample_count <= 0;
             last_event_sample_count <= 0;
-            event                   <= EVENT_C;
-            previous_event          <= EVENT_C;
-            counter_confirmation_a  <= 0;
-            counter_confirmation_b  <= 0;
-            last_a_section_end      <= 0;
-            last_b_section_end      <= 0;
-            event_start             <= 0;
-            event_out               <= EVENT_C;
-            class_a_threshold       <= 5;
-            class_b_threshold       <= 1;
-            timeout_period          <= 5 * SAMPLE_RATE;
+            counter_confirmation_a <= 0;
+            counter_confirmation_b <= 0;
+            last_a_section_end     <= 0;
+            last_b_section_end     <= 0;
+            event_start            <= 0;
+            event_out              <= EVENT_C;
         end else begin
-            // Update external inputs
+            // Update thresholds from inputs
             class_a_threshold <= class_a_thresh_in;
             class_b_threshold <= class_b_thresh_in;
             timeout_period    <= timeout_period_in;
@@ -78,50 +78,50 @@ module classifier (
                     excitability <= 0;
             end
 
-            // Handle timeout
+            // Timeout reversion to class C
             if ((sample_count - last_event_sample_count) > timeout_period)
-                event <= EVENT_C;
+                current_event <= EVENT_C;
 
             // Classification logic
             if (excitability >= (class_a_threshold * MAX_EXCITABILITY)) begin
                 counter_confirmation_a <= counter_confirmation_a + 1;
                 if (counter_confirmation_a > COUNTER_CONFIRMATION_A_THRESH) begin
-                    if (event != EVENT_A) begin
-                        previous_event <= event;
-                        event_start <= sample_count;
+                    if (current_event != EVENT_A) begin
+                        previous_event <= current_event;
+                        event_start    <= sample_count;
                     end
-                    event <= EVENT_A;
+                    current_event <= EVENT_A;
                 end
             end else if (excitability >= (class_b_threshold * MAX_EXCITABILITY)) begin
-                if ((event != EVENT_B) && ((sample_count - last_a_section_end) > ICTAL_REFRACTORY_PERIOD)) begin
-                    previous_event <= event;
-                    event          <= EVENT_B;
+                if ((current_event != EVENT_B) && ((sample_count - last_a_section_end) > ICTAL_REFRACTORY_PERIOD)) begin
+                    previous_event <= current_event;
+                    current_event  <= EVENT_B;
                     event_start    <= sample_count;
                 end else begin
                     counter_confirmation_b <= counter_confirmation_b + 1;
                 end
             end else begin
-                if ((event == EVENT_A) && ((sample_count - last_a_section_end) > ICTAL_REFRACTORY_PERIOD)) begin
+                if ((current_event == EVENT_A) && ((sample_count - last_a_section_end) > ICTAL_REFRACTORY_PERIOD)) begin
                     if (excitability > (class_b_threshold * MAX_EXCITABILITY))
-                        event <= EVENT_B;
+                        current_event <= EVENT_B;
                     else
-                        event <= EVENT_C;
+                        current_event <= EVENT_C;
                 end else begin
                     if (previous_event != EVENT_C) begin
                         counter_confirmation_a <= 0;
                         counter_confirmation_b <= 0;
-                        if (event == EVENT_B)
+                        if (current_event == EVENT_B)
                             last_b_section_end <= sample_count;
-                        else if (event == EVENT_A)
+                        else if (current_event == EVENT_A)
                             last_a_section_end <= sample_count;
-                        previous_event <= event;
+                        previous_event <= current_event;
                     end
-                    event <= EVENT_C;
+                    current_event <= EVENT_C;
                 end
             end
 
-            // Output assignment
-            event_out <= event;
+            // Output event
+            event_out <= current_event;
         end
     end
 endmodule
