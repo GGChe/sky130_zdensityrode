@@ -57,7 +57,7 @@ set vars(script_root)  [pwd]/SCRIPTS
 # vars(def_files)     <floorplan DEF file>
 # --------------------------------------------------------------------
 set vars(design)           "processing_unit"
-set vars(netlist) 		   "$vars(data_root)/hdl/processing_unit.vhd"
+set vars(netlist) 		   "$vars(data_root)/hdl/processing_unit.v"
 
 #set vars(fp_file)    $vars(data_root)/dtmf_recvr_core.fp
 #set vars(cts_spec)  "$vars(data_root)/dtmf_recvr_core.ctstch"
