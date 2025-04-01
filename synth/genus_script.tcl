@@ -14,7 +14,7 @@ if {[llength $my_hdl_files] == 0} {
     exit 1
 }
 
-set my_toplevel "processing_unit"
+set my_toplevel "processing_system"
 
 read_hdl -language v2001 $my_hdl_files
 # Alternatively:
