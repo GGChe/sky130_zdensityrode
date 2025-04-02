@@ -17,7 +17,7 @@ module classifier (
     localparam SAMPLE_RATE                   = 2000;
     localparam MAX_EXCITABILITY              = 100;
     localparam SATURATION_EXCITABILITY       = 10;
-    localparam ICTAL_REFRACTORY_PERIOD       = 5 * SAMPLE_RATE;
+    localparam ICTAL_REFRACTORY_PERIOD       = 10 * SAMPLE_RATE;
     localparam DECAY_STEP_PERIOD             = SAMPLE_RATE / 2;
     localparam COUNTER_CONFIRMATION_A_THRESH = 5;
     localparam COUNTER_CONFIRMATION_B_THRESH = 1;

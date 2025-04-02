@@ -14,7 +14,7 @@ module processing_unit (
     wire spike_detected_internal;
 
     // Instantiate spike detector (ASO)
-    aso spike_detector_instance (
+    ado spike_detector_instance (
         .clk(clk),
         .rst(rst),
         .data_in(data_in),
