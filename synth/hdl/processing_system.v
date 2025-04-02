@@ -1,9 +1,9 @@
 module processing_system #(
-    parameter NUM_UNITS = 4
+    parameter NUM_UNITS = 8
 )(
     input  wire                         clk,
     input  wire                         rst,
-    // Each channel is 16 bits => 8×16=128 bits total
+    // Each channel is 16 bits => 8ï¿½16=128 bits total
     input  wire [16*NUM_UNITS-1:0]      data_in,
     input  wire [16*NUM_UNITS-1:0]      threshold_in_array,
     input  wire [7:0]                   class_a_thresh_in,
@@ -31,7 +31,7 @@ module processing_system #(
     ) ram_inst (
         .clk      (clk),
         .rst      (rst),
-        .data_in  (data_in),   // 8×16=128 bits
+        .data_in  (data_in),   // 8ï¿½16=128 bits
         .write_en (write_en),
         .read_en  (read_en),
         .addr     (addr),
