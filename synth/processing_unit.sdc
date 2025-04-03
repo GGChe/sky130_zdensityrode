@@ -3,7 +3,7 @@ set_units -capacitance 1000fF
 set_units -time 1000ps
 
 # Set the current design
-current_design processing_unit
+current_design [processing_system]
 
 # Clock constraint
 create_clock -name clk -period 10.0 -waveform {0.0 5.0} [get_ports clk]
