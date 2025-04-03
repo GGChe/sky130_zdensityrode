@@ -1,5 +1,5 @@
 module processing_system #(
-    parameter NUM_UNITS = 4
+    parameter NUM_UNITS = 8
 )(
     input  wire                         clk,
     input  wire                         rst,
