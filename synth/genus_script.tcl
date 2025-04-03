@@ -18,7 +18,7 @@ set my_toplevel "processing_system"
 
 read_hdl -language v2001 $my_hdl_files
 # Alternatively:
-analyze -format verilog $my_hdl_files
+# analyze -format verilog $my_hdl_files
 # elaborate $my_toplevel
 
 elaborate $my_toplevel
