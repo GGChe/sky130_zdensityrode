@@ -1,60 +1,61 @@
-`timescale 1ns / 1ps
-
-module ram_wide #(
-    parameter integer NUM_CHANNELS = 8,  // Number of channels
-    parameter integer DATA_WIDTH   = 16, // Bits per channel
-    parameter integer ADDR_WIDTH   = 5   // Enough for 32 entries
+/*
+ * Copyright (c) 2024 Gabriel Galeote-Checa
+ * SPDX-License-Identifier: Apache-2.0
+ */
+ module RAM16 #(
+    parameter ADDR_WIDTH = 3
 )(
-    input  wire clk,
-    input  wire rst,
-
-    // Write inputs
-    input  wire [(NUM_CHANNELS*DATA_WIDTH)-1:0] data_in,
-    input  wire write_en,
-
-    // Read inputs
-    input  wire read_en,
-
-    // Address for both read and write
-    input  wire [ADDR_WIDTH-1:0] addr,
-
-    // Outputs
-    output wire ram_full, // Example "full" flag
-    output reg [(NUM_CHANNELS*DATA_WIDTH)-1:0] data_out
+    input                   CLK,
+    input                   RST,        // synchronous reset (active-high)
+    input                   READ,       // read enable
+    input                   WRITE,      // write strobe
+    output reg              FULL,       // 1-cycle pulse when buffer fills
+    input  [ADDR_WIDTH-1:0] A,          // read address
+    input  [15:0]           Di,         // data in
+    output reg [15:0]       Do          // data out
 );
 
-    // Memory array: each address holds NUM_CHANNELS * DATA_WIDTH bits
-    reg [(NUM_CHANNELS*DATA_WIDTH)-1:0] ram_mem [0:(1<<ADDR_WIDTH)-1];
+    // ------------------------------------------------------------
+    localparam DEPTH = 1 << ADDR_WIDTH;
 
-    // Simple 'full' logic example: '1' when addr is all 1s
-    assign ram_full = (addr == {ADDR_WIDTH{1'b1}});
+    reg [15:0] RAM [0:DEPTH-1];
+    reg [ADDR_WIDTH-1:0] wr_addr;
 
-    // Write-first single-port RAM behavior
-    always @(posedge clk) begin
-        if (rst) begin
-            data_out <= { (NUM_CHANNELS*DATA_WIDTH){1'b0} };
+    integer j;
+
+    // ------------------------------------------------------------
+    always @(posedge CLK) begin
+        //--------------------- reset ------------------------------------
+        if (RST) begin
+            // $display("[RAM] DEBUG: @%0t RST=1, clearing RAM", $time);
+            for (j = 0; j < DEPTH; j = j + 1)
+                RAM[j] <= 16'h0000;
+            wr_addr <= 0;
+            FULL    <= 1'b0;
+            Do      <= 16'h0000;
         end
+        //--------------------- normal operation -------------------------
         else begin
-            // Perform write if enabled
-            if (write_en) begin
-                ram_mem[addr] <= data_in;
+            // ---------- write side -------------------------------------
+            FULL <= 1'b0;                       // default: de-assert
+
+            if (WRITE) begin
+                RAM[wr_addr] <= Di;            // store incoming sample
+                // $display("[RAM] DEBUG: @%0t WRITE=1, wr_addr=%0d, Di=0x%04h", $time, wr_addr, Di);
+
+                if (wr_addr == DEPTH-1) begin   // last location just written
+                    FULL    <= 1'b1;            // one-cycle flag
+                    wr_addr <= 0;               // wrap for next frame
+                end else begin
+                    wr_addr <= wr_addr + 1'b1;  // advance pointer
+                end
             end
 
-            // Handle read
-            // If both read_en & write_en are asserted,
-            // we return the newly written data_in instead of stale data.
-            if (read_en) begin
-                if (write_en) begin
-                    data_out <= data_in;  // "write-first" on read-during-write
-                end
-                else begin
-                    data_out <= ram_mem[addr];
-                end
-            end
-            else begin
-                data_out <= { (NUM_CHANNELS*DATA_WIDTH){1'b0} };
-            end
+            // ---------- read side --------------------------------------
+            if (READ)
+                Do <= RAM[A];
+            else
+                Do <= 16'h0000;
         end
     end
-
 endmodule

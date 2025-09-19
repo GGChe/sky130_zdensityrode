@@ -1,79 +1,99 @@
-module processing_system #(
-    parameter NUM_UNITS = 16
-)(
-    input  wire                         clk,
-    input  wire                         rst,
-    // Each channel is 16 bits => 8�16=128 bits total
-    input  wire [16*NUM_UNITS-1:0]      data_in,
-    input  wire [16*NUM_UNITS-1:0]      threshold_in_array,
-    input  wire [7:0]                   class_a_thresh_in,
-    input  wire [7:0]                   class_b_thresh_in,
-    input  wire [15:0]                  timeout_period_in,
-    output wire [NUM_UNITS-1:0]         spike_detection_array,
-    output wire [2*NUM_UNITS-1:0]       event_out_array
-);
+/*
+ * Copyright (c) 2024 Gabriel Galeote-Checa
+ * SPDX-License-Identifier: Apache-2.0
+ */
+ module processing_system #(
+        parameter integer NUM_UNITS  = 16,
+        parameter integer DATA_WIDTH = 16
+    )(
+        input  wire                     clk,
+        input  wire                     rst,
 
-    // Internal signals
-    wire [NUM_UNITS-1:0]   spike_detection_internal;
-    wire [2*NUM_UNITS-1:0] event_out_internal;
-
-    // New wide RAM signals
-    reg  [4:0] addr;
-    reg        write_en, read_en;
-    wire       ram_full;
-    wire [(NUM_UNITS*16)-1:0] ram_data_out;
-
-    // Instantiate new wide RAM
-    ram_wide #(
-        .NUM_CHANNELS(NUM_UNITS),
-        .DATA_WIDTH(16),
-        .ADDR_WIDTH(5)         // 32 entries
-    ) ram_inst (
-        .clk      (clk),
-        .rst      (rst),
-        .data_in  (data_in),   // 8�16=128 bits
-        .write_en (write_en),
-        .read_en  (read_en),
-        .addr     (addr),
-        .data_out (ram_data_out),
-        .ram_full (ram_full)
+        input  wire [DATA_WIDTH-1:0]    sample_in,        
+        input  wire                     write_sample_in,  
+        output wire [NUM_UNITS-1:0]     spike_detection_array,
+        output wire [2*NUM_UNITS-1:0]   event_out_array,
+        output wire                     sample_valid   
     );
 
-    // Generate processing units
-    generate
-        for (genvar j = 0; j < NUM_UNITS; j = j + 1) begin : processing_units
-            processing_unit processing_unit_inst (
-                .clk   (clk),
-                .rst   (rst),
-                // Each channel j gets its own slice from the wide read-out
-                .data_in(ram_data_out[16*(j+1)-1 : 16*j]),
-                .threshold_in(threshold_in_array[16*(j+1)-1 : 16*j]),
-                .class_a_thresh_in(class_a_thresh_in),
-                .class_b_thresh_in(class_b_thresh_in),
-                .timeout_period_in(timeout_period_in),
-                .spike_detection(spike_detection_internal[j]),
-                .event_out(event_out_internal[2*(j+1)-1 : 2*j])
-            );
-        end
-    endgenerate
+    localparam integer RAM_ADDR_W = $clog2(NUM_UNITS);
 
-    // Example address control logic
-    always @(posedge clk or posedge rst) begin
+    wire ram_full_pulse;                
+    wire [DATA_WIDTH-1:0] ram_dout;
+
+    RAM16 #(.ADDR_WIDTH(RAM_ADDR_W)) u_ram16 (
+        .CLK  (clk),
+        .RST  (rst),
+        .READ (read_en),
+        .WRITE(write_sample_in),
+        .FULL (ram_full_pulse),
+        .A    (rd_addr),
+        .Di   (sample_in),
+        .Do   (ram_dout)
+    );
+
+    // ------------------------------------------------------------
+    // 2. Read-out FSM
+    // ------------------------------------------------------------
+    reg                       read_en = 1'b0;
+    reg [RAM_ADDR_W-1:0]      rd_addr = 0;
+    reg [DATA_WIDTH-1:0]      proc_word_buf [0:NUM_UNITS-1];
+    reg [31:0]                read_count;
+    reg                       sample_valid_int = 1'b0;   
+
+    assign sample_valid = sample_valid_int;
+
+    always @(posedge clk) begin
         if (rst) begin
-            addr       <= 5'd0;
-            write_en   <= 1'b0;
-            read_en    <= 1'b0;
+            read_en        <= 0;
+            rd_addr        <= 0;
+            read_count     <= 0;
+            sample_valid_int <= 0;
         end else begin
-            // Just as an example, always write
-            write_en <= 1'b1;
-            // Read after we've started writing
-            read_en  <= 1'b1;
-            addr     <= addr + 1'b1;
+            sample_valid_int <= 0;
+
+            if (ram_full_pulse && !read_en) begin
+                read_en        <= 1;
+                rd_addr        <= 0;
+                read_count     <= 0;
+            end else if (read_en) begin
+
+                if (read_count <= NUM_UNITS) begin
+                    proc_word_buf[read_count - 1] <= ram_dout;
+                end
+
+                rd_addr    <= rd_addr + 1;
+                read_count <= read_count + 1;
+
+                if (read_count == NUM_UNITS) begin
+                    read_en <= 0;
+                    sample_valid_int <= 1;
+                end
+            end
         end
     end
 
-    // Outputs
-    assign spike_detection_array = spike_detection_internal;
-    assign event_out_array       = event_out_internal;
+    wire [NUM_UNITS-1:0]   spike_det_int;
+    wire [2*NUM_UNITS-1:0] event_out_int;
+
+    genvar gi;
+    for (gi = 0; gi < NUM_UNITS; gi = gi + 1) begin : G_PU
+
+        processing_unit u_proc (
+            .clk                (clk),
+            .rst                (rst),
+            .data_in            (proc_word_buf[gi]),
+            .threshold_in       (16'd200),
+            .class_a_thresh_in  (8'd10),
+            .class_b_thresh_in  (8'd3),
+            .timeout_period_in  (16'd1000),
+            .spike_detection    (spike_det_int[gi]),
+            .event_out          (event_out_int[2*gi +: 2])
+        );
+
+    end
+
+    assign spike_detection_array = spike_det_int;
+    assign event_out_array       = event_out_int;
 
 endmodule
