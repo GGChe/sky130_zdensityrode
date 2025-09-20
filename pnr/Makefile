@@ -105,6 +105,12 @@ signoff: postroute
 	VPATH=$(VPATH); export VPATH; $(TOOL) -init $(SCRIPTS)/INNOVUS/run_signoff.tcl -log $(LOG)/signoff.log -overwrite $(ARGS)
 	source SCRIPTS/INNOVUS/report_hooks.tcl
 
+reports: signoff
+	@mkdir -p RPT $(LOG)
+	VPATH=$(VPATH); export VPATH; \
+	$(TOOL) -init SCRIPTS/INNOVUS/run_reports.tcl \
+	        -log $(LOG)/reports.log -overwrite $(ARGS)
+
 debug_%:
 	VPATH=$(VPATH); export STEP=$* ; export VPATH; $(TOOL) -init $(SCRIPTS)/INNOVUS/run_debug.tcl -log $(LOG)/$@.log -win $(ARGS:-nowin=)
 
