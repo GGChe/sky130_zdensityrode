@@ -15,5 +15,5 @@ if {!$restored} {
 }
 
 # Generate reports
-source SCRIPTS/INNOVUS/report_hooks.tcl
+source ./report_hooks.tcl
 exit
