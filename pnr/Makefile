@@ -103,6 +103,8 @@ signoff: postroute
 		/usr/bin/tclsh SCRIPTS/gen_flow.tcl -m flat -d FF -v 17.1.0 -s . -y none -n  signoff ; \
 	fi
 	VPATH=$(VPATH); export VPATH; $(TOOL) -init $(SCRIPTS)/INNOVUS/run_signoff.tcl -log $(LOG)/signoff.log -overwrite $(ARGS)
+	source SCRIPTS/INNOVUS/report_hooks.tcl
+
 debug_%:
 	VPATH=$(VPATH); export STEP=$* ; export VPATH; $(TOOL) -init $(SCRIPTS)/INNOVUS/run_debug.tcl -log $(LOG)/$@.log -win $(ARGS:-nowin=)
 
