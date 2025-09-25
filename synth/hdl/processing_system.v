@@ -5,7 +5,7 @@
 `default_nettype none
 
 module processing_system #(
-    parameter integer NUM_UNITS  = 256,
+    parameter integer NUM_UNITS  = 512,
     parameter integer DATA_WIDTH = 16
 ) (
     input  wire                     clk,
